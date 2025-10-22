@@ -1,9 +1,9 @@
 import json
-import requests
 import os
-from dotenv import load_dotenv
 from collections import defaultdict
-from datetime import datetime
+
+import requests
+from dotenv import load_dotenv
 
 current_dir = os.path.dirname(__file__)
 user_settings = os.path.join(current_dir, "..", "user_settings.json")
@@ -11,14 +11,14 @@ user_settings = os.path.join(current_dir, "..", "user_settings.json")
 load_dotenv()
 api_key = os.getenv("API_KEY")
 
+
 def get_greeting(current_date):
     """
     Формирует приветствие в зависимости от времени суток.
     Возвращает словарь с ключом "greeting" и соответствующим приветствием
     """
-# Преобразуем строку даты и времени в объект datetime
+    # Преобразуем строку даты и времени в объект datetime
     try:
-        #current_date = datetime.now()
         current_time = current_date.hour
 
         # Определяем приветствие в зависимости от времени
@@ -32,21 +32,25 @@ def get_greeting(current_date):
             greeting = "Добрый вечер"
 
         # Формируем JSON-ответ
-        response = {
-            "greeting": greeting
-        }
+        response = {"greeting": greeting}
         return response
     except ValueError:
-        return json.dumps({"error": "Неверный формат даты и времени. Ожидается YYYY-MM-DD HH:MM:SS"})
+        return json.dumps(
+            {"error": "Неверный формат даты и времени. Ожидается YYYY-MM-DD HH:MM:SS"}
+        )
+
+
 # Функция для обработки данных карты
 def process_card_data(transactions):
     """
-        Обрабатывает данные по картам из транзакций, собирая информацию по каждой карте.
-        Возвращает словарь, где ключ — номер карты.
+    Обрабатывает данные по картам из транзакций, собирая информацию по каждой карте.
+    Возвращает словарь, где ключ — номер карты.
     """
-    card_info = defaultdict(lambda: {"last_digits": "", "total_spent": 0, "transactions": []})
+    card_info = defaultdict(
+        lambda: {"last_digits": "", "total_spent": 0, "transactions": []}
+    )
 
-    for index, rows in  transactions.iterrows():
+    for index, rows in transactions.iterrows():
         card_number = rows["Номер карты"]
         amount = rows["Сумма операции"]
 
@@ -65,8 +69,8 @@ def process_card_data(transactions):
 # Функция для получения топ-5 транзакций
 def get_top_transactions(transactions):
     """
-        Формирует список из топ-5 транзакций с наибольшей суммой платежа.
-        Возвращает список из пяти словарей, каждый содержит информацию о транзакции.
+    Формирует список из топ-5 транзакций с наибольшей суммой платежа.
+    Возвращает список из пяти словарей, каждый содержит информацию о транзакции.
     """
     transactions_info = []
     for index, rows in transactions.iterrows():
@@ -75,18 +79,20 @@ def get_top_transactions(transactions):
         category = rows["Категория"]
         description = rows["Описание"]
 
-        transactions_info.append({
-            "date": date,
-            "amount": amount,
-            "category": category,
-            "description": description,
-        })
+        transactions_info.append(
+            {
+                "date": date,
+                "amount": amount,
+                "category": category,
+                "description": description,
+            }
+        )
 
-    top_transactions = sorted(transactions_info, key=lambda x: x["amount"], reverse=True)[:5]
+    top_transactions = sorted(
+        transactions_info, key=lambda x: x["amount"], reverse=True
+    )[:5]
 
     return top_transactions
-
-
 
 
 # Функция для получения курсов валют
@@ -104,11 +110,9 @@ def get_currency_rates():
         url = f"https://api.twelvedata.com/price?symbol={currency}&apikey={api_key}"
         response = requests.get(url).json()
         price = float(response.get("price", 0))
-        result.append({
-            "currency": currency,
-            "price": round(price, 2)
-        })
+        result.append({"currency": currency, "price": round(price, 2)})
     return result
+
 
 # Функция для получения стоимости акций S&P 500
 def get_sp500_stock_prices():
@@ -125,9 +129,5 @@ def get_sp500_stock_prices():
         url = f"https://api.twelvedata.com/price?symbol={stock}&apikey={api_key}"
         response = requests.get(url).json()
         price = float(response.get("price", 0))
-        result.append({
-            "stock": stock,
-            "price": round(price, 2)
-        })
+        result.append({"stock": stock, "price": round(price, 2)})
     return result
-

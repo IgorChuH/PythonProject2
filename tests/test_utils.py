@@ -1,8 +1,11 @@
 import unittest
-import pandas as pd
-from unittest.mock import patch, mock_open
 from datetime import datetime
+from unittest.mock import mock_open, patch
+
+import pandas as pd
+
 import src.utils
+
 
 class TestYourFunctions(unittest.TestCase):
     def test_get_greeting(self):
@@ -39,7 +42,14 @@ class TestYourFunctions(unittest.TestCase):
 
     def test_get_top_transactions(self):
         data = {
-            "Дата платежа": ["2024-06-01", "2024-06-02", "2024-06-03", "2024-06-04", "2024-06-05", "2024-06-06"],
+            "Дата платежа": [
+                "2024-06-01",
+                "2024-06-02",
+                "2024-06-03",
+                "2024-06-04",
+                "2024-06-05",
+                "2024-06-06",
+            ],
             "Сумма платежа": [100, 300, 50, 500, 200, 150],
             "Категория": ["food", "travel", "food", "shopping", "travel", "food"],
             "Описание": ["desc1", "desc2", "desc3", "desc4", "desc5", "desc6"],
@@ -56,7 +66,11 @@ class TestYourFunctions(unittest.TestCase):
         amounts = [item["amount"] for item in result]
         self.assertNotIn(150, amounts)  # Потому что топ-5 отсекает ту с 150
 
-    @patch("src.utils.open", new_callable=mock_open, read_data='{"user_currencies": ["USD", "EUR"]}')
+    @patch(
+        "src.utils.open",
+        new_callable=mock_open,
+        read_data='{"user_currencies": ["USD", "EUR"]}',
+    )
     @patch("src.utils.requests.get")
     def test_get_currency_rates(self, mock_get, mock_file):
         mock_get.side_effect = [
@@ -69,9 +83,15 @@ class TestYourFunctions(unittest.TestCase):
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0], {"currency": "USD", "price": 75.43})
         self.assertEqual(result[1], {"currency": "EUR", "price": 90.12})
-        mock_file.assert_called_once_with(src.utils.user_settings, "r", encoding="utf-8")
+        mock_file.assert_called_once_with(
+            src.utils.user_settings, "r", encoding="utf-8"
+        )
 
-    @patch("src.utils.open", new_callable=mock_open, read_data='{"user_stocks": ["AAPL", "MSFT"]}')
+    @patch(
+        "src.utils.open",
+        new_callable=mock_open,
+        read_data='{"user_stocks": ["AAPL", "MSFT"]}',
+    )
     @patch("src.utils.requests.get")
     def test_get_sp500_stock_prices(self, mock_get, mock_file):
         mock_get.side_effect = [
@@ -84,7 +104,10 @@ class TestYourFunctions(unittest.TestCase):
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0], {"stock": "AAPL", "price": 150.56})
         self.assertEqual(result[1], {"stock": "MSFT", "price": 250.78})
-        mock_file.assert_called_once_with(src.utils.user_settings, "r", encoding="utf-8")
+        mock_file.assert_called_once_with(
+            src.utils.user_settings, "r", encoding="utf-8"
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

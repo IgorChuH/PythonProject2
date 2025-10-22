@@ -1,14 +1,12 @@
-import pandas as pd
 import json
 import os
-from datetime import  datetime
-from src.utils import get_greeting
-from src.utils import process_card_data
-from src.utils import get_top_transactions
-from src.utils import get_currency_rates
-from src.utils import get_sp500_stock_prices
+from datetime import datetime
 
+import pandas as pd
 
+from src.utils import (get_currency_rates, get_greeting,
+                       get_sp500_stock_prices, get_top_transactions,
+                       process_card_data)
 
 current_dir = os.path.dirname(__file__)
 file = os.path.join(current_dir, "..", "data", "operations.xlsx")
@@ -24,9 +22,11 @@ def main(transactions, current_date=None):
         if current_date is None:
             current_time = datetime.now()
         else:
-            current_time = datetime.strptime(current_date, '%Y-%m-%d %H:%M:%S')
+            current_time = datetime.strptime(current_date, "%Y-%m-%d %H:%M:%S")
     except ValueError:
-        return json.dumps({"error": "Неверный формат даты и времени. Ожидается YYYY-MM-DD HH:MM:SS"})
+        return json.dumps(
+            {"error": "Неверный формат даты и времени. Ожидается YYYY-MM-DD HH:MM:SS"}
+        )
 
         # Получаем приветствие
 
@@ -47,7 +47,9 @@ def main(transactions, current_date=None):
     # Формируем JSON-ответ
     response = {
         "greeting": greeting,
-        "card_data": {k: {**v, "transactions": v["transactions"][:5]} for k, v in result.items()},
+        "card_data": {
+            k: {**v, "transactions": v["transactions"][:5]} for k, v in result.items()
+        },
         # Только первые 5 транзакций
         "top_transactions": top_transactions,
         "currency_rates": currency_rates,
@@ -59,5 +61,4 @@ def main(transactions, current_date=None):
 
 if __name__ == "__main__":
     excel_data = pd.read_excel(file)
-
     print(main(excel_data))

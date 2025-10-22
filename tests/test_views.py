@@ -1,32 +1,48 @@
-import unittest
-from unittest.mock import patch, MagicMock
-from src.views import main  # импорт вашей функции main
 import json
+import unittest
+from unittest.mock import MagicMock, patch
+
+from src.views import main  # импорт вашей функции main
+
 
 class TestMainFunction(unittest.TestCase):
 
-    @patch('src.views.get_sp500_stock_prices')
-    @patch('src.views.get_currency_rates')
-    @patch('src.views.get_top_transactions')
-    @patch('src.views.process_card_data')
-    @patch('src.views.get_greeting')
-    @patch('src.views.datetime')
+    @patch("src.views.get_sp500_stock_prices")
+    @patch("src.views.get_currency_rates")
+    @patch("src.views.get_top_transactions")
+    @patch("src.views.process_card_data")
+    @patch("src.views.get_greeting")
+    @patch("src.views.datetime")
     def test_main_with_fixed_date(
-        self, mock_datetime,
+        self,
+        mock_datetime,
         mock_get_greeting,
         mock_process_card_data,
         mock_get_top_transactions,
         mock_get_currency_rates,
-        mock_get_sp500_stock_prices):
+        mock_get_sp500_stock_prices,
+    ):
 
         # Мокируем datetime.strptime корректно
         from datetime import datetime as real_datetime
-        mock_datetime.strptime.side_effect = lambda s, fmt: real_datetime.strptime(s, fmt)
+
+        mock_datetime.strptime.side_effect = lambda s, fmt: real_datetime.strptime(
+            s, fmt
+        )
 
         # Мокируем возвращаемые значения
         mock_get_greeting.return_value = "Добрый день"
         mock_process_card_data.return_value = {
-            "card1": {"transactions": [{"id": 1}, {"id": 2}, {"id": 3}, {"id": 4}, {"id": 5}, {"id": 6}]}
+            "card1": {
+                "transactions": [
+                    {"id": 1},
+                    {"id": 2},
+                    {"id": 3},
+                    {"id": 4},
+                    {"id": 5},
+                    {"id": 6},
+                ]
+            }
         }
         mock_get_top_transactions.return_value = [{"id": 1}, {"id": 2}]
         mock_get_currency_rates.return_value = {"USD": 70}
@@ -39,7 +55,7 @@ class TestMainFunction(unittest.TestCase):
         result = json.loads(result_json)
 
         # Проверяем корректность вызовов
-        mock_datetime.strptime.assert_called_once_with(date_str, '%Y-%m-%d %H:%M:%S')
+        mock_datetime.strptime.assert_called_once_with(date_str, "%Y-%m-%d %H:%M:%S")
         mock_get_greeting.assert_called_once()
         mock_process_card_data.assert_called_once_with(transactions)
         mock_get_top_transactions.assert_called_once_with(transactions)
@@ -62,7 +78,11 @@ class TestMainFunction(unittest.TestCase):
         result = json.loads(result_json)
 
         self.assertIn("error", result)
-        self.assertEqual(result["error"], "Неверный формат даты и времени. Ожидается YYYY-MM-DD HH:MM:SS")
+        self.assertEqual(
+            result["error"],
+            "Неверный формат даты и времени. Ожидается YYYY-MM-DD HH:MM:SS",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
