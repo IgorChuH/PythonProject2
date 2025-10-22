@@ -12,6 +12,10 @@ load_dotenv()
 api_key = os.getenv("API_KEY")
 
 def get_greeting(current_date):
+    """
+    Формирует приветствие в зависимости от времени суток.
+    Возвращает словарь с ключом "greeting" и соответствующим приветствием
+    """
 # Преобразуем строку даты и времени в объект datetime
     try:
         #current_date = datetime.now()
@@ -31,11 +35,15 @@ def get_greeting(current_date):
         response = {
             "greeting": greeting
         }
-        return json.dumps(response)
+        return response
     except ValueError:
         return json.dumps({"error": "Неверный формат даты и времени. Ожидается YYYY-MM-DD HH:MM:SS"})
 # Функция для обработки данных карты
 def process_card_data(transactions):
+    """
+        Обрабатывает данные по картам из транзакций, собирая информацию по каждой карте.
+        Возвращает словарь, где ключ — номер карты.
+    """
     card_info = defaultdict(lambda: {"last_digits": "", "total_spent": 0, "transactions": []})
 
     for index, rows in  transactions.iterrows():
@@ -56,6 +64,10 @@ def process_card_data(transactions):
 
 # Функция для получения топ-5 транзакций
 def get_top_transactions(transactions):
+    """
+        Формирует список из топ-5 транзакций с наибольшей суммой платежа.
+        Возвращает список из пяти словарей, каждый содержит информацию о транзакции.
+    """
     transactions_info = []
     for index, rows in transactions.iterrows():
         date = rows["Дата платежа"]
@@ -79,6 +91,11 @@ def get_top_transactions(transactions):
 
 # Функция для получения курсов валют
 def get_currency_rates():
+    """
+    Получает актуальные курсы валют, заданных пользователем.
+    Читает список валют из файла настроек пользователя, запрашивает текущую цену каждой валюты через API twelvedata.
+    Возвращает список словарей с текущими курсами валют.
+    """
     result = []
     with open(user_settings, "r", encoding="utf-8") as file:
         data = json.load(file)
@@ -95,6 +112,11 @@ def get_currency_rates():
 
 # Функция для получения стоимости акций S&P 500
 def get_sp500_stock_prices():
+    """
+    Получает актуальные цены акций S&P 500 из списка пользователя.
+    Читает список акций из файла настроек пользователя,
+    запрашивает текущую цену каждой акции через API twelvedata.
+    """
     result = []
     with open(user_settings, "r", encoding="utf-8") as file:
         data = json.load(file)

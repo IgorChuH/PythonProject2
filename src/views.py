@@ -16,6 +16,10 @@ file = os.path.join(current_dir, "..", "data", "operations.xlsx")
 
 # Главная функция
 def main(transactions, current_date=None):
+    """
+    Главная функция обработки данных транзакций и получения сводной информации.
+    Возвращает JSON-строку с результатами, включающими. В случае неверного формата даты возвращает JSON с ошибкой.
+    """
     try:
         if current_date is None:
             current_time = datetime.now()

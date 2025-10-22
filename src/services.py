@@ -2,12 +2,21 @@ import logging
 import json
 import re
 import pandas as pd
+import os
 
 pattern = re.compile(r'^\+7\s(\d{3})\s(\d{3}-\d{2}-\d{2}|\d{2}-\d{2}-\d{2})$')
 
 logging.basicConfig(level=logging.INFO)
 
+current_dir = os.path.dirname(__file__)
+file = os.path.join(current_dir, "..", "data", "operations.xlsx")
+
 def search_transactions(transactions, query):
+    """
+        Выполняет поиск транзакций по заданному текстовому запросу в описании и категории.
+        Возвращает SON-строку с результатами поиска — список словарей, где каждый словарь описывает транзакцию,
+            соответствующую запросу. Форматированный вывод с отступами, кодировка UTF-8.
+        """
     logging.info(f"Search query: {query}")
     result = []
     q = query.lower()
@@ -22,6 +31,11 @@ def search_transactions(transactions, query):
     return json.dumps(result, ensure_ascii=False, indent=4)
 
 def search_by_phone(transactions, phone_query):
+    """
+        Выполняет поиск транзакций, содержащих телефонный номер, совпадающий с запросом.
+        Возвращает JSON-строку с результатами поиска — список словарей с транзакциями, у которых в описании
+        есть совпадение по телефону. Используется нормализация номеров (удаление нецифровых символов).
+    """
     logging.info(f"Phone search query: {phone_query}")
     result = []
 
@@ -42,7 +56,7 @@ def search_by_phone(transactions, phone_query):
 
 
 if __name__ == "__main__":
-    excel_data = pd.read_excel("C:\\Users\\ZIPHAI\\Decstop\\PythonProject2\\data\\operations.xlsx")
+    excel_data = pd.read_excel(file)
 
     print(search_transactions(excel_data, "Аптеки"))
     print(search_by_phone(excel_data, "+7 921 111-22-33"))
