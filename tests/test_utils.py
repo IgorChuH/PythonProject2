@@ -50,7 +50,7 @@ class TestYourFunctions(unittest.TestCase):
                 "2024-06-05",
                 "2024-06-06",
             ],
-            "Сумма платежа": [100, 300, 50, 500, 200, 150],
+            "Сумма платежа": [300, 500, 200, 150, 170, 210],
             "Категория": ["food", "travel", "food", "shopping", "travel", "food"],
             "Описание": ["desc1", "desc2", "desc3", "desc4", "desc5", "desc6"],
         }
