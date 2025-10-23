@@ -30,4 +30,8 @@ line_length = 119
 [tool.mypy]
 disallow_untyped_defs = true
 warn_return_any = true
+<<<<<<< HEAD
 exclude = 'venv'
+=======
+exclude = 'venv'
+>>>>>>> a335fe6 (tool)
